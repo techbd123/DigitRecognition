@@ -5,9 +5,11 @@ import scipy as sp
 from scipy import misc
 import tensorflow as tf
 
+
 def ProcessPixel(image):
 	h,w,c=image.shape
 	imageBitMap=""
+	pixel=[]
 	for x in range(0,h):
 		for y in range(0,w):
 			val=int(image[x,y,2])
@@ -15,14 +17,16 @@ def ProcessPixel(image):
 			val+=image[x,y,0]
 			if val*2<765:
 				imageBitMap+="1"
+				pixel.append(1)
 			else:
 				imageBitMap+="0"
+				pixel.append(0)
 		imageBitMap+="\n"
-	return imageBitMap
+	return pixel,imageBitMap
 
 def main():
 	image=misc.imread(sys.argv[1])
-	imageBitMap=ProcessPixel(image)
+	pixels,imageBitMap=ProcessPixel(image)
 	print(imageBitMap,end="")
 	return 0
 	
