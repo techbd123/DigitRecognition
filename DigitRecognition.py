@@ -2,6 +2,7 @@ from __future__ import print_function
 import sys
 import numpy as numpy
 import cv2
+import tensorflow as tf
 
 def ProcessPixel(image):
 	h,w,c=image.shape
@@ -19,9 +20,9 @@ def ProcessPixel(image):
 	return imageBitMap
 
 def main():
-	image=cv2.imread("E1_105.jpg")
+	image=cv2.imread(sys.argv[1])
 	imageBitMap=ProcessPixel(image)
 	print(imageBitMap,end="")
 	return 0
-
+	
 main()
