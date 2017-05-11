@@ -1,11 +1,19 @@
-from tensorflow.examples.tutorials.mnist import input_data
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+import sys
+import argparse
+import numpy as np
 import tensorflow as tf
+from tensorflow.examples.tutorials.mnist import input_data
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy
 import random as ran
 
-mnist = input_data.read_data_sets("MNIST_data/",one_hot=True)
+digit = scipy.ndimage.imread("dataset/allDigitImages/E9_31.jpg")
 
+mnist = input_data.read_data_sets("MNIST_data/",one_hot=True)
 
 # Create the model
 x = tf.placeholder(tf.float32, [None, 784])
@@ -39,7 +47,7 @@ for _ in range(1000):
 # Test trained model
 correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-print(sess.run(accuracy, feed_dict={x: mnist.test.images,y_: mnist.test.labels}))
+print(sess.run(accuracy, feed_dict={x: mnist.test.images,y_: mnist.test.labels})*100)
 
 def display_digit(num):
     print(batch_ys[num])
@@ -48,6 +56,5 @@ def display_digit(num):
     plt.title('Example: %d  Label: %d' % (num, label))
     plt.imshow(image, cmap=plt.get_cmap('gray_r'))
     plt.show()
-
 
 display_digit(ran.randint(0,batch_xs.shape[0]))
