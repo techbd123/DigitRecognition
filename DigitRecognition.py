@@ -1,10 +1,13 @@
+from __future__ import absolute_import
+from __future__ import division
 from __future__ import print_function
 import sys
+import argparse
 import numpy as np
 import scipy as sp
 from scipy import misc
 import tensorflow as tf
-
+from tensorflow.examples.tutorials.mnist import input_data
 
 def ProcessPixel(image):
 	h,w,c=image.shape
@@ -29,5 +32,5 @@ def main():
 	pixels,imageBitMap=ProcessPixel(image)
 	print(imageBitMap,end="")
 	return 0
-	
+
 main()
