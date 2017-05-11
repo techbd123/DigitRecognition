@@ -49,4 +49,5 @@ def display_digit(num):
     plt.imshow(image, cmap=plt.get_cmap('gray_r'))
     plt.show()
 
-display_digit(2)
+
+display_digit(ran.randint(0,batch_xs.shape[0]))
