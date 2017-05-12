@@ -11,13 +11,27 @@ import scipy
 from array import *
 from random import shuffle
 
+
+def LabelToByte(label):
+	value=0
+	for i in range(2):
+		if label[i]=='B':
+			a=10
+		elif label[i]=='E':
+			a=11
+		else:
+			a=int(label[i])-int('0')
+		value=value*12+a
+	return value
+
+
 # Load from and save to
-Names = [['./dataset/allDigitImages','trainset'], ['./dataset/allDigitImages','testset']]
+Names = [['./dataset/allDigitImages','./dataset/train'], ['./dataset/allDigitImages','./dataset/test']]
 
 for name in Names:
 	
 	data_image = array('B')
-	data_label = []
+	data_label = array('B')
 	FileList = []
 	for filename in os.listdir(name[0])[1:]: # [1:] Excludes .DS_Store from Mac OS
 		if filename.endswith(".jpg") or filename.endswith(".jpeg") or filename.endswith(".png"):
@@ -42,7 +56,7 @@ for name in Names:
 				val/=3
 				data_image.append(int(val))
 
-		data_label.append(label) # labels start (two unsigned bytes each)
+		data_label.append(LabelToByte(label)) # labels start (one unsigned byte each)
 
 	hexval = "{0:#0{1}x}".format(len(FileList),6) # number of files in HEX
 
@@ -53,7 +67,7 @@ for name in Names:
 	header.append(int('0x'+hexval[2:][:2],16))
 	header.append(int('0x'+hexval[2:][2:],16))
 	
-	data_label = [header] + data_label
+	data_label = header + data_label
 
 	# additional header for images array
 	

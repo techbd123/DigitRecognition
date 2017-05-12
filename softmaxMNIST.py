@@ -10,20 +10,20 @@ import matplotlib.pyplot as plt
 import scipy
 import random as ran
 
-digit = scipy.ndimage.imread("dataset/allDigitImages/E9_31.jpg")
+#digit = scipy.ndimage.imread("dataset/allDigitImages/E9_31.jpg")
 
 #scipy.misc.imshow(digit)
 
-mnist = input_data.read_data_sets("MNIST_data/",one_hot=True)
+mnist = input_data.read_data_sets("dataset/",one_hot=True)
 
 # Create the model
-x = tf.placeholder(tf.float32, [None, 784])
-W = tf.Variable(tf.zeros([784, 10]))
-b = tf.Variable(tf.zeros([10]))
+x = tf.placeholder(tf.float32, [None, 10000])
+W = tf.Variable(tf.zeros([10000, 20]))
+b = tf.Variable(tf.zeros([20]))
 y = tf.matmul(x, W) + b
 
 # Define loss and optimizer
-y_ = tf.placeholder(tf.float32, [None, 10])
+y_ = tf.placeholder(tf.float32, [None, 20])
 
 # The raw formulation of cross-entropy,
 #
@@ -42,7 +42,7 @@ sess = tf.InteractiveSession()
 tf.global_variables_initializer().run()
 # Train
 for _ in range(1000):
-  batch_xs, batch_ys = mnist.train.next_batch(100)
+  batch_xs, batch_ys = mnist.train.next_batch(1)
   sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
 
 # Test trained model
