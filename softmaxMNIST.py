@@ -7,13 +7,12 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 import matplotlib.pyplot as plt
-import numpy as np
 import scipy
 import random as ran
 
 digit = scipy.ndimage.imread("dataset/allDigitImages/E9_31.jpg")
 
-scipy.misc.imshow(digit)
+#scipy.misc.imshow(digit)
 
 mnist = input_data.read_data_sets("MNIST_data/",one_hot=True)
 
