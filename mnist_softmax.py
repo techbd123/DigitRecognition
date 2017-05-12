@@ -13,6 +13,8 @@ import random as ran
 
 digit = scipy.ndimage.imread("dataset/allDigitImages/E9_31.jpg")
 
+scipy.misc.imshow(digit)
+
 mnist = input_data.read_data_sets("MNIST_data/",one_hot=True)
 
 # Create the model

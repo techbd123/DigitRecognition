@@ -1,3 +1,0 @@
-# DigitRecognition
-# DigitRecognition
-# DigitRecognition
