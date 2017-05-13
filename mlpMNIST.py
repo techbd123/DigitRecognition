@@ -9,16 +9,24 @@ import mnist
 import matplotlib.pyplot as plt
 import scipy
 import random as ran
-import functions as fun
 
-#digit = scipy.ndimage.imread("dataset/allDigitImages/E9_31.jpg")
-#scipy.misc.imshow(digit)
+
+def function():
+	pass
+
+
+
+def display_digit(index):
+    label = data.test.labels[index].argmax(axis=0)
+    image = data.test.images[index].reshape([height,width])
+    plt.title('Sample #%d  Label = %d' % (index, label))
+    plt.imshow(image, cmap=plt.get_cmap('gray_r'))
+    plt.show()
 
 height=100
 width=100
 num_input_pixels=height*width
 num_classes=20
-num_batches=100
 num_iterations=10000
 
 data = mnist.read_data_sets("dataset/",one_hot=True,num_classes=num_classes)
@@ -33,7 +41,9 @@ y = tf.matmul(x, W) + b
 y_ = tf.placeholder(tf.float32, [None, num_classes])
 
 # The raw formulation of cross-entropy,
+#
 tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(tf.nn.softmax(y)),reduction_indices=[1]))
+#
 # can be numerically unstable.
 #
 # So here we use tf.nn.softmax_cross_entropy_with_logits on the raw
@@ -48,7 +58,7 @@ tf.global_variables_initializer().run()
 print('Training started!')
 
 for _ in range(num_iterations):
-  batch_x, batch_y = data.train.next_batch(num_batches)
+  batch_x, batch_y = data.train.next_batch(60)
   sess.run(train_step, feed_dict={x: batch_x, y_: batch_y})
 
 print('Training finished!')
@@ -63,4 +73,5 @@ print('Accuracy = '+str(sess.run(accuracy, feed_dict={x: data.test.images,y_: da
 
 print('Testing finished!')
 
-fun.DisplayDigit(data.test.images,height,width,data.test.labels,ran.randint(0,data.test.labels.shape[0]))
+
+display_digit(ran.randint(0,data.test.labels.shape[0]))

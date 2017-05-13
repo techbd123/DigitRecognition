@@ -8,17 +8,10 @@ import numpy as np
 from scipy import misc
 import matplotlib.pyplot as plt
 import scipy
+import functions as fun
 from array import *
 from random import shuffle
 
-
-def LabelToByte(label):
-	if label[0]=='E' :
-		return int(label[1])-int('0')
-	return int(label[1])-int('0')+10
-
-
-# Load from and save to
 Names = [['./dataset/trainset','./dataset/train'], ['./dataset/testset','./dataset/test']]
 
 for name in Names:
@@ -27,26 +20,28 @@ for name in Names:
 	data_label = array('B')
 	FileList = []
 	for filename in os.listdir(name[0]):
-		if filename.endswith(".jpg") or filename.endswith(".jpeg") or filename.endswith(".png"):
-			filename=name[0]+'/'+filename;
-			FileList.append(filename)
+		if filename.endswith('.jpg') or filename.endswith('.jpeg') or filename.endswith('.png'):
+			filepath=name[0]+'/'+filename;
+			FileList.append([filepath,filename])
 
+	# Shuffling is done so that the exact dataset is NOT produced
 	shuffle(FileList)
 
 	height,width,fnum=0,0,0
-	for filename in FileList:
-	#	print(filename)
-		label=filename.split('/')[3]
-		label=label[0]+label[1]
-	#	print(label)
+	for file in FileList:
+		filepath=file[0]
+		filename=file[1]
+		label=filename[0]+filename[1]
 
-		image=misc.imread(filename)
+		image=misc.imread(filepath)
 		h,w,c=image.shape
 		height=max([height,h])
 		width=max([width,w])
 		if h!=100 or w!=100:
-			print("Image "+filename+" size is not 100x100 pixels. So discard it!")
+			print('The size of image '+filepath+' is not of 100x100 pixels. So discard it!')
 			continue
+		print(filepath)
+		print(label)
 		for x in range(h):
 			for y in range(w):
 				val=float(image[x,y,2])
@@ -55,11 +50,11 @@ for name in Names:
 				val/=3
 				data_image.append(int(val))
 
-		data_label.append(LabelToByte(label)) # labels start (one unsigned byte each)
+		data_label.append(fun.LabelToValue(label))
 		fnum+=1
 	#	print(LabelToByte(label))
 	
-	hexval = "{0:#0{1}x}".format(fnum,6) # number of files in HEX
+	hexval = "{0:#0{1}x}".format(fnum,6)
 #	print(hexval)
 
 	# header for label array
@@ -74,7 +69,7 @@ for name in Names:
 	
 	data_label = header + data_label
 
-	# additional header for images array
+	# header for images array
 	
 	if max([height,width]) <= 100:
 		header.extend([0,0,0,h,0,0,0,w])
@@ -94,8 +89,10 @@ for name in Names:
 	data_label.tofile(output_file)
 	output_file.close()
 
-# gzip resulting files
+# gzip
 
 for name in Names:
-	os.system('gzip '+name[1]+'-images-idx3-ubyte')
-	os.system('gzip '+name[1]+'-labels-idx1-ubyte')
+	os.system('gzip -f '+name[1]+'-images-idx3-ubyte')
+	os.system('gzip -f '+name[1]+'-labels-idx1-ubyte')
+
+print("Conversion to MNIST format is successful!")
