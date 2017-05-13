@@ -31,16 +31,22 @@ for name in Names:
 			filename=name[0]+'/'+filename;
 			FileList.append(filename)
 
-	#shuffle(FileList) # Usefull for further segmenting the validation set
+	shuffle(FileList)
 
+	height,width,fnum=0,0,0
 	for filename in FileList:
-		print(filename)
+	#	print(filename)
 		label=filename.split('/')[3]
 		label=label[0]+label[1]
-		print(label)
+	#	print(label)
 
 		image=misc.imread(filename)
 		h,w,c=image.shape
+		height=max([height,h])
+		width=max([width,w])
+		if h!=100 or w!=100:
+			print("Image "+filename+" size is not 100x100 pixels. So discard it!")
+			continue
 		for x in range(h):
 			for y in range(w):
 				val=float(image[x,y,2])
@@ -50,32 +56,33 @@ for name in Names:
 				data_image.append(int(val))
 
 		data_label.append(LabelToByte(label)) # labels start (one unsigned byte each)
-		print(LabelToByte(label))
+		fnum+=1
+	#	print(LabelToByte(label))
 	
-	hexval = "{0:#0{1}x}".format(len(FileList),6) # number of files in HEX
-	print(hexval)
+	hexval = "{0:#0{1}x}".format(fnum,6) # number of files in HEX
+#	print(hexval)
 
 	# header for label array
 
 	header = array('B')
 	header.extend([0,0,8,1,0,0])
-	print(header)
+#	print(header)
 	header.append(int('0x'+hexval[2:][:2],16))
-	print(header)
+#	print(header)
 	header.append(int('0x'+hexval[2:][2:],16))
-	print(header)
+#	print(header)
 	
 	data_label = header + data_label
 
 	# additional header for images array
 	
-	if max([h,w]) <= 100:
+	if max([height,width]) <= 100:
 		header.extend([0,0,0,h,0,0,0,w])
 	else:
 		raise ValueError('Image exceeds maximum size: 100x100 pixels');
 
 	header[3] = 3 # Changing MSB for image data (0x00000803)
-	print(header)
+#	print(header)
 	
 	data_image = header + data_image
 

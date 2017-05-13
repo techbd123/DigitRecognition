@@ -13,7 +13,6 @@ import random as ran
 #digit = scipy.ndimage.imread("dataset/allDigitImages/E9_31.jpg")
 #scipy.misc.imshow(digit)
 
-
 height=100
 width=100
 num_input_pixels=height*width
@@ -45,21 +44,25 @@ train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
 
 sess = tf.InteractiveSession()
 tf.global_variables_initializer().run()
+
 # Train
-for _ in range(1000):
-  batch_xs, batch_ys = data.train.next_batch(20)
+for _ in range(10000):
+  batch_xs, batch_ys = data.train.next_batch(100)
   sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+
+
 
 # Test trained model
 correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-print(sess.run(accuracy, feed_dict={x: data.test.images,y_: data.test.labels})*100)
+print(accuracy)
+print('Accuracy = '+str(sess.run(accuracy, feed_dict={x: data.test.images,y_: data.test.labels})*100))
 
 def display_digit(num):
     print(batch_ys[num])
     label = batch_ys[num].argmax(axis=0)
     image = batch_xs[num].reshape([height,width])
-    plt.title('Example: %d  Label: %d' % (num, label))
+    plt.title('Sample #%d  Label = %d' % (num, label))
     plt.imshow(image, cmap=plt.get_cmap('gray_r'))
     plt.show()
 
