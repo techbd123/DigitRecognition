@@ -13,16 +13,9 @@ from random import shuffle
 
 
 def LabelToByte(label):
-	value=0
-	for i in range(2):
-		if label[i]=='B':
-			a=10
-		elif label[i]=='E':
-			a=11
-		else:
-			a=int(label[i])-int('0')
-		value=value*12+a
-	return value
+	if label[0]=='E' :
+		return int(label[1])-int('0')
+	return int(label[1])-int('0')+10
 
 
 # Load from and save to

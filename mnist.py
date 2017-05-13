@@ -67,11 +67,14 @@ def extract_images(f):
 
 def dense_to_one_hot(labels_dense, num_classes):
   """Convert class labels from scalars to one-hot vectors."""
+  print(labels_dense)
   num_labels=labels_dense.shape[0]
   print("num_labels = "+str(num_labels)+" num_classes = "+str(num_classes))
   index_offset=numpy.arange(num_labels)*num_classes
   print("index_offset = "+str(index_offset))
   labels_one_hot=numpy.zeros((num_labels,num_classes))
+  print("labels_one_hot = "+str(labels_one_hot))
+  print("labels_dense.ravel() = "+str(labels_dense.ravel()))
   labels_one_hot.flat[index_offset+labels_dense.ravel()] = 1
   return labels_one_hot
 
@@ -98,7 +101,7 @@ def extract_labels(f, one_hot=False, num_classes=1):
                        (magic, f.name))
     num_items = _read32(bytestream)
     buf = bytestream.read(num_items)
-    print("num_items = "+str(num_items))
+    print("num_items = "+str(num_items)+" = "+str(len(buf)))
     labels = numpy.frombuffer(buf, dtype=numpy.uint8)
     if one_hot:
       return dense_to_one_hot(labels, num_classes)
