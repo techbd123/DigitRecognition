@@ -26,19 +26,19 @@ def LabelToByte(label):
 
 
 # Load from and save to
-Names = [['./dataset/allDigitImages','./dataset/train'], ['./dataset/allDigitImages','./dataset/test']]
+Names = [['./dataset/trainset','./dataset/train'], ['./dataset/testset','./dataset/test']]
 
 for name in Names:
 	
 	data_image = array('B')
 	data_label = array('B')
 	FileList = []
-	for filename in os.listdir(name[0])[1:]: # [1:] Excludes .DS_Store from Mac OS
+	for filename in os.listdir(name[0]):
 		if filename.endswith(".jpg") or filename.endswith(".jpeg") or filename.endswith(".png"):
 			filename=name[0]+'/'+filename;
 			FileList.append(filename)
 
-	shuffle(FileList) # Usefull for further segmenting the validation set
+	#shuffle(FileList) # Usefull for further segmenting the validation set
 
 	for filename in FileList:
 		print(filename)
@@ -48,8 +48,8 @@ for name in Names:
 
 		image=misc.imread(filename)
 		h,w,c=image.shape
-		for x in range(0,h):
-			for y in range(0,w):
+		for x in range(h):
+			for y in range(w):
 				val=float(image[x,y,2])
 				val+=image[x,y,1]
 				val+=image[x,y,0]
@@ -57,26 +57,32 @@ for name in Names:
 				data_image.append(int(val))
 
 		data_label.append(LabelToByte(label)) # labels start (one unsigned byte each)
-
+		print(LabelToByte(label))
+	
 	hexval = "{0:#0{1}x}".format(len(FileList),6) # number of files in HEX
+	print(hexval)
 
 	# header for label array
 
 	header = array('B')
 	header.extend([0,0,8,1,0,0])
+	print(header)
 	header.append(int('0x'+hexval[2:][:2],16))
+	print(header)
 	header.append(int('0x'+hexval[2:][2:],16))
+	print(header)
 	
 	data_label = header + data_label
 
 	# additional header for images array
 	
 	if max([h,w]) <= 100:
-		header.extend([0,0,0,w,0,0,0,h])
+		header.extend([0,0,0,h,0,0,0,w])
 	else:
 		raise ValueError('Image exceeds maximum size: 100x100 pixels');
 
 	header[3] = 3 # Changing MSB for image data (0x00000803)
+	print(header)
 	
 	data_image = header + data_image
 
