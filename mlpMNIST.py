@@ -16,18 +16,18 @@ height=100
 width=100
 num_input_pixels=height*width
 num_classes=20
-num_batches=100
+num_batchSize=40
 
 # Extract data
 data = mnist.read_data_sets("dataset",one_hot=True,num_classes=num_classes)
 
 learning_rate=0.001
-training_epochs=50
+training_epochs=40
 display_step=1
 
 # Neural Network parameters
-num_hidden_1 = 1000 # 1st layer number of features (units)
-num_hidden_2 = 1000 # 2nd layer number of features (units)
+num_hidden_1 = 4096 # 1st layer number of features (units)
+num_hidden_2 = 4096 # 2nd layer number of features (units)
 
 # tf Graph input
 x = tf.placeholder(tf.float32, [None,num_input_pixels])
@@ -39,7 +39,7 @@ y = tf.placeholder(tf.float32, [None,num_classes])
 # Showing Data
 print('\nnum_input_pixels = '+str(num_input_pixels))
 print('num_classes = '+str(num_classes))
-print('num_batches = '+str(num_batches))
+print('num_batchSize = '+str(num_batchSize))
 print('num_hidden_1 = '+str(num_hidden_1))
 print('num_hidden_2 = '+str(num_hidden_2))
 print('training_epochs = '+str(training_epochs))
@@ -88,10 +88,10 @@ with tf.Session() as sess:
     print('Training Started!')
     for epoch in range(training_epochs):
         avg_cost = 0.0
-        total_batch = int(data.train.num_examples/num_batches)
+        total_batch = int(data.train.num_examples/num_batchSize)
         # Loop over all batches
         for i in range(total_batch):
-            batch_x, batch_y = data.train.next_batch(num_batches)
+            batch_x, batch_y = data.train.next_batch(num_batchSize)
             # Run optimization op (backprop) and cost op (to get loss value)
             _, c = sess.run([optimizer, cost],feed_dict={x: batch_x,y: batch_y})
             # Compute average loss
