@@ -9,69 +9,106 @@ import mnist
 import matplotlib.pyplot as plt
 import scipy
 import random as ran
-
-
-def function():
-	pass
-
-
-
-def display_digit(index):
-    label = data.test.labels[index].argmax(axis=0)
-    image = data.test.images[index].reshape([height,width])
-    plt.title('Sample #%d  Label = %d' % (index, label))
-    plt.imshow(image, cmap=plt.get_cmap('gray_r'))
-    plt.show()
+import functions as fun
+# Initial input
 
 height=100
 width=100
 num_input_pixels=height*width
 num_classes=20
-num_iterations=10000
+num_batches=100
 
-data = mnist.read_data_sets("dataset/",one_hot=True,num_classes=num_classes)
+# Extract data
+data = mnist.read_data_sets("dataset",one_hot=True,num_classes=num_classes)
 
-# Create the model
-x = tf.placeholder(tf.float32, [None, num_input_pixels])
-W = tf.Variable(tf.zeros([num_input_pixels,num_classes]))
-b = tf.Variable(tf.zeros([num_classes]))
-y = tf.matmul(x, W) + b
+learning_rate=0.001
+training_epochs=50
+display_step=1
+
+# Neural Network parameters
+num_hidden_1 = 1000 # 1st layer number of features (units)
+num_hidden_2 = 1000 # 2nd layer number of features (units)
+
+# tf Graph input
+x = tf.placeholder(tf.float32, [None,num_input_pixels])
+
+# tf Graph output
+y = tf.placeholder(tf.float32, [None,num_classes])
+
+
+# Showing Data
+print('\nnum_input_pixels = '+str(num_input_pixels))
+print('num_classes = '+str(num_classes))
+print('num_batches = '+str(num_batches))
+print('num_hidden_1 = '+str(num_hidden_1))
+print('num_hidden_2 = '+str(num_hidden_2))
+print('training_epochs = '+str(training_epochs))
+print('learning_rate = '+str(learning_rate))
+print('')
+
+# Create model
+def multilayer_perceptron(x, weights, biases):
+    # Hidden layer 1 with RELU activation
+    layer_1 = tf.add(tf.matmul(x, weights['h1']), biases['b1'])
+    layer_1 = tf.nn.relu(layer_1)
+    # Hidden layer 2 with RELU activation
+    layer_2 = tf.add(tf.matmul(layer_1, weights['h2']), biases['b2'])
+    layer_2 = tf.nn.relu(layer_2)
+    # Output layer with linear activation
+    out_layer = tf.matmul(layer_2, weights['out']) + biases['out']
+    return out_layer
+
+# Store layers weight & bias
+weights ={
+    'h1': tf.Variable(tf.random_normal([num_input_pixels, num_hidden_1])),
+    'h2': tf.Variable(tf.random_normal([num_hidden_1, num_hidden_2])),
+    'out': tf.Variable(tf.random_normal([num_hidden_2, num_classes]))
+}
+biases = {
+    'b1': tf.Variable(tf.random_normal([num_hidden_1])),
+    'b2': tf.Variable(tf.random_normal([num_hidden_2])),
+    'out': tf.Variable(tf.random_normal([num_classes]))
+}
+
+# Construct model
+pred = multilayer_perceptron(x, weights, biases)
 
 # Define loss and optimizer
-y_ = tf.placeholder(tf.float32, [None, num_classes])
+cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=y))
+optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
-# The raw formulation of cross-entropy,
-#
-tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(tf.nn.softmax(y)),reduction_indices=[1]))
-#
-# can be numerically unstable.
-#
-# So here we use tf.nn.softmax_cross_entropy_with_logits on the raw
-# outputs of 'y', and then average across the batch.
-cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=y_, logits=y))
-train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+# Initializing the variables
+init = tf.global_variables_initializer()
 
-sess = tf.InteractiveSession()
-tf.global_variables_initializer().run()
+# Launch the graph
+with tf.Session() as sess:
+    sess.run(init)
 
-# Train
-print('Training started!')
+    # Training cycle
+    print('Training Started!')
+    for epoch in range(training_epochs):
+        avg_cost = 0.0
+        total_batch = int(data.train.num_examples/num_batches)
+        # Loop over all batches
+        for i in range(total_batch):
+            batch_x, batch_y = data.train.next_batch(num_batches)
+            # Run optimization op (backprop) and cost op (to get loss value)
+            _, c = sess.run([optimizer, cost],feed_dict={x: batch_x,y: batch_y})
+            # Compute average loss
+            avg_cost+= c/total_batch
+        # Display cost per epoch step
+        if epoch%display_step==0:
+            print('Epoch:', '%04d' % (epoch+1), 'cost =', '{:.9f}'.format(avg_cost))
 
-for _ in range(num_iterations):
-  batch_x, batch_y = data.train.next_batch(60)
-  sess.run(train_step, feed_dict={x: batch_x, y_: batch_y})
+    print("Training Finished!")
 
-print('Training finished!')
+    # Test trained model
+    print('Testing started!')
+    correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
+	
+	# Calculate accuracy
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
+    print("Accuracy:", accuracy.eval({x: data.test.images, y: data.test.labels})*100)
+    print('Testing finished!')
 
-
-# Test trained model
-print('Testing started!')
-
-correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-print('Accuracy = '+str(sess.run(accuracy, feed_dict={x: data.test.images,y_: data.test.labels})*100))
-
-print('Testing finished!')
-
-
-display_digit(ran.randint(0,data.test.labels.shape[0]))
+fun.DisplayDigit(data.test.images,height,width,data.test.labels,ran.randint(0,data.test.labels.shape[0]))

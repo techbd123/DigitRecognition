@@ -11,9 +11,6 @@ import scipy
 import random as ran
 import functions as fun
 
-#digit = scipy.ndimage.imread("dataset/allDigitImages/E9_31.jpg")
-#scipy.misc.imshow(digit)
-
 height=100
 width=100
 num_input_pixels=height*width

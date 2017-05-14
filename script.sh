@@ -1,2 +1,2 @@
 python convertToMNIST.py
-python softmaxMNIST.py
+python mlpMNIST.py
