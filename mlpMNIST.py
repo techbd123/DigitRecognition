@@ -3,6 +3,7 @@ from __future__ import division
 from __future__ import print_function
 import sys
 import argparse
+import math
 import numpy as np
 import tensorflow as tf
 import mnist
@@ -19,15 +20,15 @@ num_classes=20
 num_batchSize=40
 
 # Extract data
-data = mnist.read_data_sets("dataset",one_hot=True,num_classes=num_classes)
-
+data = mnist.read_data_sets('dataset',one_hot=True,num_classes=num_classes)
+ 
 learning_rate=0.001
-training_epochs=40
+training_epochs=256
 display_step=1
 
 # Neural Network parameters
-num_hidden_1 = 4096 # 1st layer number of features (units)
-num_hidden_2 = 4096 # 2nd layer number of features (units)
+num_hidden_1 = 1000 # 1st layer number of features (units)
+num_hidden_2 = 1000 # 2nd layer number of features (units)
 
 # tf Graph input
 x = tf.placeholder(tf.float32, [None,num_input_pixels])
@@ -47,7 +48,7 @@ print('learning_rate = '+str(learning_rate))
 print('')
 
 # Create model
-def multilayer_perceptron(x, weights, biases):
+def MultilayerPerceptron(x,weights,biases):
     # Hidden layer 1 with RELU activation
     layer_1 = tf.add(tf.matmul(x, weights['h1']), biases['b1'])
     layer_1 = tf.nn.relu(layer_1)
@@ -59,7 +60,7 @@ def multilayer_perceptron(x, weights, biases):
     return out_layer
 
 # Store layers weight & bias
-weights ={
+weights = {
     'h1': tf.Variable(tf.random_normal([num_input_pixels, num_hidden_1])),
     'h2': tf.Variable(tf.random_normal([num_hidden_1, num_hidden_2])),
     'out': tf.Variable(tf.random_normal([num_hidden_2, num_classes]))
@@ -71,10 +72,10 @@ biases = {
 }
 
 # Construct model
-pred = multilayer_perceptron(x, weights, biases)
+pred = MultilayerPerceptron(x,weights,biases)
 
 # Define loss and optimizer
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=y))
+cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred,labels=y))
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
 # Initializing the variables
@@ -88,27 +89,24 @@ with tf.Session() as sess:
     print('Training Started!')
     for epoch in range(training_epochs):
         avg_cost = 0.0
-        total_batch = int(data.train.num_examples/num_batchSize)
+        total_batch = int(math.ceil(float(data.train.num_examples)/num_batchSize))
         # Loop over all batches
         for i in range(total_batch):
-            batch_x, batch_y = data.train.next_batch(num_batchSize)
+            batch_x,batch_y = data.train.next_batch(num_batchSize)
             # Run optimization op (backprop) and cost op (to get loss value)
-            _, c = sess.run([optimizer, cost],feed_dict={x: batch_x,y: batch_y})
+            _, _cost = sess.run([optimizer,cost],feed_dict={x: batch_x,y: batch_y})
             # Compute average loss
-            avg_cost+= c/total_batch
+            avg_cost+= _cost/total_batch
         # Display cost per epoch step
         if epoch%display_step==0:
-            print('Epoch:', '%04d' % (epoch+1), 'cost =', '{:.9f}'.format(avg_cost))
+            print('Epoch:', '%04d' % (epoch+1),'cost =', '{:.9f}'.format(avg_cost),end=' ')
 
-    print("Training Finished!")
+            # Test trained model
+            correct_prediction = tf.equal(tf.argmax(pred,1), tf.argmax(y,1))
 
-    # Test trained model
-    print('Testing started!')
-    correct_prediction = tf.equal(tf.argmax(pred, 1), tf.argmax(y, 1))
-	
-	# Calculate accuracy
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
-    print("Accuracy:", accuracy.eval({x: data.test.images, y: data.test.labels})*100)
-    print('Testing finished!')
+            # Calculate accuracy
+            accuracy = tf.reduce_mean(tf.cast(correct_prediction,'float'))
+            print('Accuracy = '+str(accuracy.eval({x: data.test.images, y: data.test.labels})*100)+'%')
+    print('Training Finished!')
 
 fun.DisplayDigit(data.test.images,height,width,data.test.labels,ran.randint(0,data.test.labels.shape[0]))

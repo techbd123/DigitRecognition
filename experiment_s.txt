@@ -1,0 +1,54 @@
+MNIST_data/train-images-idx3-ubyte.gz
+Extracting MNIST_data/train-images-idx3-ubyte.gz
+num_images = 60000 row = 28 col = 28
+47040000
+Extracting MNIST_data/train-labels-idx1-ubyte.gz
+num_items = 60000 = 60000
+[5 0 4 ..., 5 6 8]
+num_labels = 60000 num_classes = 10
+index_offset = [     0     10     20 ..., 599970 599980 599990]
+labels_one_hot = [[ 0.  0.  0. ...,  0.  0.  0.]
+ [ 0.  0.  0. ...,  0.  0.  0.]
+ [ 0.  0.  0. ...,  0.  0.  0.]
+ ..., 
+ [ 0.  0.  0. ...,  0.  0.  0.]
+ [ 0.  0.  0. ...,  0.  0.  0.]
+ [ 0.  0.  0. ...,  0.  0.  0.]]
+labels_dense.ravel() = [5 0 4 ..., 5 6 8]
+Extracting MNIST_data/test-images-idx3-ubyte.gz
+num_images = 10000 row = 28 col = 28
+7840000
+Extracting MNIST_data/test-labels-idx1-ubyte.gz
+num_items = 10000 = 10000
+[7 2 1 ..., 4 5 6]
+num_labels = 10000 num_classes = 10
+index_offset = [    0    10    20 ..., 99970 99980 99990]
+labels_one_hot = [[ 0.  0.  0. ...,  0.  0.  0.]
+ [ 0.  0.  0. ...,  0.  0.  0.]
+ [ 0.  0.  0. ...,  0.  0.  0.]
+ ..., 
+ [ 0.  0.  0. ...,  0.  0.  0.]
+ [ 0.  0.  0. ...,  0.  0.  0.]
+ [ 0.  0.  0. ...,  0.  0.  0.]]
+labels_dense.ravel() = [7 2 1 ..., 4 5 6]
+
+num_input_pixels = 784
+num_classes = 10
+num_batchSize = 40
+num_hidden_1 = 196
+num_hidden_2 = 196
+training_epochs = 10
+learning_rate = 0.001
+
+Training Started!
+Epoch: 0001 cost = 90.909404627 Accuracy = 88.2799983025%
+Epoch: 0002 cost = 21.768918567 Accuracy = 90.6599998474%
+Epoch: 0003 cost = 12.782040314 Accuracy = 92.4399971962%
+Epoch: 0004 cost = 8.348032933 Accuracy = 93.1100010872%
+Epoch: 0005 cost = 5.702378738 Accuracy = 93.7699973583%
+Epoch: 0006 cost = 4.077069850 Accuracy = 93.8799977303%
+Epoch: 0007 cost = 2.870683654 Accuracy = 94.1699981689%
+Epoch: 0008 cost = 2.053463760 Accuracy = 94.4400012493%
+Epoch: 0009 cost = 1.527714447 Accuracy = 94.5900022984%
+Epoch: 0010 cost = 1.185593126 Accuracy = 94.7200000286%
+Training Finished!
